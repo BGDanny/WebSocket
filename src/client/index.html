@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Socket Client</title>
+</head>
+
+<body>
+    <input type="text" id="input" />
+    <button onclick="handleClick()">Send a message</button>
+
+    <script>
+        const socket = new WebSocket("ws://localhost:3000");
+        let isSocketOpen = false;
+        socket.onopen = () => {
+            console.log("Socket is open");
+            isSocketOpen = true;
+        }
+
+        socket.onmessage = (event) => {
+            console.log(event.data);
+        }
+
+        const handleClick = () => {
+            if (isSocketOpen) {
+                socket.send(document.getElementById("input").value);
+                document.getElementById("input").value = "";
+            }
+        }
+    </script>
+</body>
+
+</html>
