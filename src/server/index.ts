@@ -1,5 +1,4 @@
 import express from "express";
-// TODO change to https
 import * as http from "http";
 import { WebSocketServer, WebSocket } from "ws";
 
