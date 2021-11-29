@@ -5,6 +5,7 @@ import { WebSocketServer, WebSocket } from "ws";
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
+const port = process.env.PORT || 3000;
 
 interface IUserConnection {
     [key: string]: {
@@ -56,4 +57,4 @@ wss.on("connection", (ws: WebSocket) => {
     }
 });
 
-server.listen(443, () => console.log("Server started"));
+server.listen(port, () => console.log(`Server started on ${port}`));
