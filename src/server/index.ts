@@ -58,3 +58,9 @@ wss.on("connection", (ws: WebSocket) => {
 });
 
 server.listen(port, () => console.log(`Server started on ${port}`));
+
+setInterval(() => {
+    wss.clients.forEach((client) => {
+        client.send(new Date().toTimeString());
+    });
+}, 10000);
