@@ -9,12 +9,25 @@
 </head>
 
 <body>
-    <input type="text" id="input" />
-    <button onclick="handleClick()">Send a message</button>
+    <div style="text-align:center; margin-top: 20%;" id="usernameInput">
+        <label for="username">Enter the same username across different tabs to simulate multi-tab situation for user
+            agents</label>
+        <input type="text" id="username" placeholder="Username">
+        <button onclick="handleClick()">Confirm</button>
+    </div>
+    <div
+        style="font-size: xx-large; margin: 0; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+        <label for="status" id="statusLabel"></label>
+        <select id="status" onchange="handleChange()" style="font-size: xx-large;" disabled>
+            <option value="online">Online</option>
+            <option value="offline" selected>Offline</option>
+        </select>
+    </div>
 
     <script>
         const socket = new WebSocket("ws://localhost:3000");
         let isSocketOpen = false;
+        let username;
         socket.onopen = () => {
             console.log("Socket is open");
             isSocketOpen = true;
@@ -24,11 +37,26 @@
             console.log(event.data);
         }
 
-        const handleClick = () => {
+        const handleChange = () => {
             if (isSocketOpen) {
-                socket.send(document.getElementById("input").value);
-                document.getElementById("input").value = "";
+                socket.send(JSON.stringify({ online: document.getElementById("status").value === "online" ? true : false }));
             }
+        }
+
+        const handleClick = () => {
+            if (!document.getElementById("username").value) {
+                alert("Please enter a username");
+                return;
+            }
+            if (!isSocketOpen) {
+                alert("Connection not established, please try again later");
+                return;
+            }
+            username = document.getElementById("username").value;
+            socket.send(JSON.stringify({ username }));
+            document.body.removeChild(document.getElementById("usernameInput"));
+            document.getElementById("status").removeAttribute("disabled");
+            document.getElementById("statusLabel").textContent = `Welcome to the floor ${username}`;
         }
     </script>
 </body>
