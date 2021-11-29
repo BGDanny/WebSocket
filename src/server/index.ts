@@ -56,4 +56,4 @@ wss.on("connection", (ws: WebSocket) => {
     }
 });
 
-server.listen(3000, () => console.log("Server started"));
+server.listen(443, () => console.log("Server started"));
