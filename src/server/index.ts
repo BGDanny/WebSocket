@@ -57,8 +57,13 @@ wss.on("connection", (ws: WebSocket) => {
     }
 });
 
+app.get("/demo", (req, res) => {
+    res.sendFile("index.html", { root: `${__dirname}/../client` });
+})
+
 server.listen(port, () => console.log(`Server started on ${port}`));
 
+// Only used to prevent Heroku from going idle
 setInterval(() => {
     wss.clients.forEach((client) => {
         client.send(new Date().toTimeString());

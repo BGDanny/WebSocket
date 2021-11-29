@@ -25,8 +25,7 @@
     </div>
 
     <script>
-        //NOTE port number may not be 3000
-        const socket = new WebSocket("ws://localhost:3000");
+        const socket = new WebSocket(location.origin.replace(/^http/, 'ws'));
         let isSocketOpen = false;
         let username;
         socket.onopen = () => {
@@ -36,6 +35,10 @@
 
         socket.onmessage = (event) => {
             console.log(event.data);
+        }
+
+        socket.onclose = () => {
+            console.log("Connection lost");
         }
 
         const handleChange = () => {
