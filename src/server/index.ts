@@ -1,6 +1,6 @@
 import express from "express";
 import * as http from "http";
-import { WebSocketServer, WebSocket } from "ws";
+import { WebSocketServer } from "ws";
 
 const app = express();
 const server = http.createServer(app);
@@ -16,8 +16,8 @@ interface IUserConnection {
 
 let userConnection: IUserConnection = {};
 
-wss.on("connection", (ws: WebSocket, req) => {
-    console.log(`New client connection from ${req.url}. User status is default to offline`);
+wss.on("connection", (ws, req) => {
+    console.log(`New client connection from ${req.headers.origin}. User status is default to offline`);
     ws.send("You are now connected to the server");
     let username = "";
 
