@@ -1,6 +1,7 @@
 import express from "express";
 import * as http from "http";
 import { WebSocketServer } from "ws";
+import { v4 as uuidv4 } from 'uuid';
 
 const app = express();
 const server = http.createServer(app);
@@ -9,8 +10,8 @@ const port = process.env.PORT || 3000;
 
 interface IUserConnection {
     [key: string]: {
-        numberOfConnection: number;
         online: boolean;
+        onlineTabIds: Array<string>;
     }
 };
 
@@ -20,6 +21,17 @@ wss.on("connection", (ws, req) => {
     console.log(`New client connection from ${req.headers.origin}. User status is default to offline`);
     ws.send("You are now connected to the server");
     let username = "";
+    const sessionId = uuidv4();
+
+    const evaluateUserOffline = () => {
+        const index = userConnection[username].onlineTabIds.indexOf(sessionId);
+        if (index !== -1) {
+            userConnection[username].onlineTabIds.splice(index, 1);
+        }
+        if (!userConnection[username].onlineTabIds.length) {
+            userConnection[username].online = false;
+        }
+    }
 
     ws.onmessage = (e) => {
         const payload = JSON.parse(e.data.toString());
@@ -29,15 +41,16 @@ wss.on("connection", (ws, req) => {
                 userConnection = {
                     ...userConnection,
                     [username]: {
-                        numberOfConnection: 1,
-                        online: false
+                        online: false,
+                        onlineTabIds: [],
                     },
                 };
-            } else {
-                userConnection[username].numberOfConnection++;
             }
-        } else if (payload.online !== undefined && userConnection[username].numberOfConnection === 1) {
-            userConnection[username].online = payload.online;
+        } else if (payload.online === true) {
+            userConnection[username].onlineTabIds.push(sessionId);
+            userConnection[username].online = true;
+        } else if (payload.online === false) {
+            evaluateUserOffline();
         }
         console.log(userConnection);
     }
@@ -45,9 +58,7 @@ wss.on("connection", (ws, req) => {
     ws.onclose = () => {
         console.log("One connection lost");
         if (userConnection[username]) {
-            if (!--userConnection[username].numberOfConnection) {
-                userConnection[username].online = false;
-            }
+            evaluateUserOffline();
         }
         console.log(userConnection);
     }
