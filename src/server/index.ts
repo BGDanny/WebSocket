@@ -16,8 +16,8 @@ interface IUserConnection {
 
 let userConnection: IUserConnection = {};
 
-wss.on("connection", (ws: WebSocket) => {
-    console.log(`New client connection from ${ws.url}. User status is default to offline`);
+wss.on("connection", (ws: WebSocket, req) => {
+    console.log(`New client connection from ${req.url}. User status is default to offline`);
     ws.send("You are now connected to the server");
     let username = "";
 

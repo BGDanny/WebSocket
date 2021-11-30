@@ -25,11 +25,12 @@
     </div>
 
     <script>
-        const socket = new WebSocket(location.origin.replace(/^http/, 'ws'));
+        const wsUrl = location.origin.replace(/^http/, 'ws');
+        const socket = new WebSocket(wsUrl);
         let isSocketOpen = false;
         let username;
         socket.onopen = () => {
-            console.log("Socket is open");
+            console.log("Socket is connected to " + wsUrl);
             isSocketOpen = true;
         }
 
